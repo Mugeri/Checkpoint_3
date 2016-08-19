@@ -1,0 +1,22 @@
+{
+  "name": "docmanagement",
+  "version": "1.0.0",
+  "description": "This Document Management System is in fulfillment of Checkpoint 3",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andela-omugeri/Checkpoint_3.git"
+  },
+  "author": "Olive",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andela-omugeri/Checkpoint_3/issues"
+  },
+  "homepage": "https://github.com/andela-omugeri/Checkpoint_3#readme"
+}
