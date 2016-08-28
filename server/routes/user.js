@@ -1,6 +1,5 @@
 
 const router = require('express').Router();
-const Document = require('./../models/documents.js');
 const User = require('./../models/User.js');
 const Roles = require('./../models/roles.js');
 
@@ -17,11 +16,11 @@ const Roles = require('./../models/roles.js');
   });
 
   //test route to make sure everything is working
-  router.get('/', function(req, res) {
-    res.json({ message: 'Hooray! welcome to my api!'});
-  });
+  // router.get('/', function(req, res) {
+  //   res.json({ message: 'Hooray! welcome to my api!'});
+  // });
 
-  router.route('/users')
+  router.route('/')
 
     //create a user
     .post(function(req, res) {
@@ -49,7 +48,7 @@ const Roles = require('./../models/roles.js');
       });
     });
 
-  router.route('/users/:user_id')
+  router.route('/:user_id')
 
     //get the user with that id
     .get(function(req, res) {

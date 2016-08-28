@@ -5,7 +5,7 @@ var documentSchema = new Schema({
   Title: String,
   Content: String,
   Owner: String,
-  CreatedAt: Date,
-  ModifiedAt: Date
+  CreatedAt: {type: Date, default: Date.now },
+  ModifiedAt: {type: Date, default: Date.now }
 });
 module.exports = mongoose.model('Document', documentSchema);
