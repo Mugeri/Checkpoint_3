@@ -1,7 +1,8 @@
 
 const router = require('express').Router();
-const User = require('./../models/User.js');
 const Roles = require('./../models/roles.js');
+const userCntrl = require('../controllers/user.js');
+const passport = require('passport')
 
 
 {
@@ -21,76 +22,16 @@ const Roles = require('./../models/roles.js');
   // });
 
   router.route('/')
-
     //create a user
-    .post(function(req, res) {
-      var user = new User(); //create a new instance of the User models
-      user.userName = req.body.userName;
-      user.firstName = req.body.firstName;
-      user.lastName = req.body.lastName;
-      user.email = req.body.email;
-      user.password = req.body.password;
-
-      //save the user and check for errors
-      user.save(function(err) {
-        if(err) {
-          res.send(err);
-        }
-        res.json({ message: 'User created!' });
-      });
-    })
-    .get(function(req, res) {
-      User.find(function(err, users) {
-        if(err) {
-          res.send(err);
-        }
-        res.json(users);
-      });
-    });
+    .post(userCntrl.createUser)
+    .get(userCntrl.getAllUsers);
 
   router.route('/:user_id')
+    .get(userCntrl.getSpecificUser)
+    .put(userCntrl.updateUser)
+    .delete(userCntrl.deleteUser);
 
-    //get the user with that id
-    .get(function(req, res) {
-      User.findById(req.params.user_id, function(err, user) {
-        if(err){
-          res.send(err);
-        }
-        res.json(user);
-      });
-    })
-
-    //update the user with given id
-    .put(function(req, res) {
-
-      User.findById(req.params.user_id, function(err, user) {
-        if(err) {
-          res.send(err);
-        }
-        //update the user info
-        user.userName = req.body.userName;
-        user.firstName = req.body.firstName;
-        user.lastName = req.body.lastName;
-        user.email = req.body.email;
-        user.password = req.body.password;
-
-        user.save(function(err) {
-          if(err) {
-            res.send(err);
-          }
-          res.json({ message: 'User updated!'});
-        });
-      });
-    })
-    .delete(function(req, res) {
-      User.remove({
-        _id: req.params.user_id
-      }, function(err, user) {
-        if(err) {
-          res.send(err);
-        }
-        res.json({ message: 'Successfully deleted' });
-      });
-    });
+    router.route('/login')
+      .post(userCntrl.login);
 }
 module.exports = router;
