@@ -17,12 +17,18 @@ const documentCntrl = {
     });
   },
   getAllDocs: function(req, res) {
-    Document.find(function(err, documents) {
-      if(err) {
-        res.send(err);
-      }
-      res.json(documents);
-    });
+    Document.paginate(
+      Document.find(function(err, documents) {
+        if(err) {
+          res.send(err);
+        }
+        res.json(documents);
+      }),{ offset: 10, limit: 10 },(function(err, documents) {
+        if(err) {
+          res.send(err);
+        }
+        // res.json(documents);
+      }));
   },
   getSpecificDoc: function(req, res) {
     Document.findById(req.params.document_id, function(err, document) {

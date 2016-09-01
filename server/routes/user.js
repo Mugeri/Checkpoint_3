@@ -10,9 +10,13 @@ const passport = require('passport')
   //you can use it to make sure that everything
   //coming from a request is safe. You can even throw errors
   //here.
+  router.route('/login')
+    .post(userCntrl.login);
+
   router.use(function(req, res, next) {
     //do logging
     console.log('Something is happening. ')
+    userCntrl.authenticate;
     next();
   });
 
@@ -20,6 +24,8 @@ const passport = require('passport')
   // router.get('/', function(req, res) {
   //   res.json({ message: 'Hooray! welcome to my api!'});
   // });
+  router.route('/logout')
+    .post(userCntrl.logout);
 
   router.route('/')
     //create a user
@@ -31,7 +37,5 @@ const passport = require('passport')
     .put(userCntrl.updateUser)
     .delete(userCntrl.deleteUser);
 
-    router.route('/login')
-      .post(userCntrl.login);
 }
 module.exports = router;

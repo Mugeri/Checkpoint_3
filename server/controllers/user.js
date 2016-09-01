@@ -3,6 +3,20 @@ const secret = process.env.SECRET;
 const nJwt = require('njwt');
 
 const userCntrl = {
+  authenticate: function(req, res) {
+    // check header or url parameters or post parameters for token
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    if (token) {
+      nJwt.verify(token, secret,function(err,token){
+        if(err){
+          res.send(err);
+        }
+        next();
+      });
+    }
+    res.json({ message: 'No token presented!'})
+
+  },
   createUser: function(req, res) {
     var user = new User(); //create a new instance of the User models
     user.userName = req.body.userName;
@@ -83,6 +97,19 @@ const userCntrl = {
         res.json({ message: 'Error logging in!'});
       }
     })
+  },
+
+  logout: function(req, res) {
+    console.log('We are here!');
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    if(token) {
+      console.log('now we are here!');
+      token = '';
+      res.send(token);
+    } else {
+      res.json({ message: 'no token found'})
+    }
+
   }
 }
 function generateToken(userName){
