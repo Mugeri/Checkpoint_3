@@ -1,20 +1,18 @@
+require('dotenv').load();
 const User = require('./../models/User.js');
 const secret = process.env.SECRET;
 const nJwt = require('njwt');
 
+
 const userCntrl = {
   authenticate: function(req, res) {
     // check header or url parameters or post parameters for token
+    console.log('before the token', req.headers['x-access-token']);
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
-    if (token) {
-      nJwt.verify(token, secret,function(err,token){
-        if(err){
-          res.send(err);
-        }
-        next();
-      });
+    if (token !== undefined) {
+      var verified = nJwt.verify(token, secret);
     }
-    res.json({ message: 'No token presented!'})
+     return res.json({ message: 'Unauthorized User!'})
 
   },
   createUser: function(req, res) {
@@ -36,9 +34,9 @@ const userCntrl = {
   getAllUsers: function(req, res) {
     User.find(function(err, users) {
       if(err) {
-        res.send(err);
+        return res.send(err);
       }
-      res.json(users);
+      return res.json({users});
     });
   },
 
@@ -89,11 +87,10 @@ const userCntrl = {
         throw err;
       }
       if (user.validPassword(req.body.password)) {
+        console.log(req.body.userName);
         var token = generateToken(req.body.userName);
         res.send(token);
       } else {
-        console.log('Db password is ', user.password);
-        console.log('Passed password is ', user.generateHash(req.body.password));
         res.json({ message: 'Error logging in!'});
       }
     })
@@ -118,7 +115,7 @@ function generateToken(userName){
     iss: 'docman',
     permissions: 'create'
   }
-  var jwt = nJwt.create(claims,'gukuniku');
+  var jwt = nJwt.create(claims, process.env.SECRET);
   var token = jwt.compact();
   return token;
 }

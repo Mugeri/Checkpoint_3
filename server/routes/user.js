@@ -16,7 +16,7 @@ const passport = require('passport')
   router.use(function(req, res, next) {
     //do logging
     console.log('Something is happening. ')
-    userCntrl.authenticate;
+    userCntrl.authenticate(req, res);
     next();
   });
 

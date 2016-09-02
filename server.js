@@ -6,6 +6,7 @@ const router = require('./server/routes');
 const port = process.env.PORT || 8080;
 const passport = require('passport');
 const flash = require('connect-flash');
+require('dotenv').load();
 
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -17,7 +18,7 @@ mongoose.connect('mongodb://localhost/docman');
 // configure app to use bodyParser()
 //this will let us get data from a POST
 app.use(morgan('dev')); //log every request to the console
-app.use(cookieParser('gukuniku')); //read cookieParser
+app.use(cookieParser(process.env.SECRET)); //read cookieParser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(session());
