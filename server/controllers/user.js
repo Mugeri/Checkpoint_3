@@ -11,9 +11,10 @@ const userCntrl = {
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (token !== undefined) {
       var verified = nJwt.verify(token, secret);
-    }
-     return res.json({ message: 'Unauthorized User!'})
+    } else {
+      return res.json({ message: 'Unauthorized User!'})
 
+    }
   },
   createUser: function(req, res) {
     var user = new User(); //create a new instance of the User models
@@ -36,7 +37,7 @@ const userCntrl = {
       if(err) {
         return res.send(err);
       }
-      return res.json({users});
+      return res.json(users);
     });
   },
 
