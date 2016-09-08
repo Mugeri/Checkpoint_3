@@ -7,30 +7,44 @@ const nJwt = require('njwt');
 const userCntrl = {
   authenticate: function(req, res) {
     // check header or url parameters or post parameters for token
-    console.log('before the token', req.headers['x-access-token']);
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
-    if (token !== undefined) {
+    if (token) {
       var verified = nJwt.verify(token, secret);
+      return verified;
     } else {
-      return res.json({ message: 'Unauthorized User!'})
+      return res.json({ message: 'Unauthorized User!'});
 
     }
   },
   createUser: function(req, res) {
-    var user = new User(); //create a new instance of the User models
-    user.userName = req.body.userName;
-    user.firstName = req.body.firstName;
-    user.lastName = req.body.lastName;
-    user.email = req.body.email;
-    user.password = user.generateHash(req.body.password);
+    var token = userCntrl.authenticate(req, res);
+    var permissions = token.body.permissions;
+    User.find({email: req.body.email }, function(err, users) {
+      if(!users) {
+        var user = new User(); //create a new instance of the User models
+        user.userName = req.body.userName;
+        user.name.first = req.body.firstName;
+        user.name.last = req.body.lastName;
+        user.email = req.body.email;
+        user.password = user.generateHash(req.body.password);
+        if(permissions == 'Admin'){
+          user.role = req.body.role;
+        } else {
+          user.role = 'User';
+        }
 
-    //save the user and check for errors
-    user.save(function(err) {
-      if(err) {
-        res.send(err);
+        //save the user and check for errors
+        user.save(function(err) {
+          if(err) {
+            res.send(err);
+          }
+          res.json({ message: 'User created!' });
+        });
+      } else {
+        res.json({ message: 'User already exists'});
       }
-      res.json({ message: 'User created!' });
     });
+
   },
   getAllUsers: function(req, res) {
     User.find(function(err, users) {
@@ -56,19 +70,30 @@ const userCntrl = {
       if(err) {
         res.send(err);
       }
-      //update the user info
-      user.userName = req.body.userName;
-      user.firstName = req.body.firstName;
-      user.lastName = req.body.lastName;
-      user.email = req.body.email;
-      user.password = user.generateHash(req.body.password);
+      if(!user) {
+        res.json({message: 'no such user!'});
+      } else {
+        //update the user info
+        user.userName = req.body.userName;
+        user.name.first = req.body.firstName;
+        user.name.last = req.body.lastName;
+        user.email = req.body.email;
+        user.password = user.generateHash(req.body.password);
 
-      user.save(function(err) {
-        if(err) {
-          res.send(err);
+        if(permissions == 'Admin'){
+          user.role = req.body.role;
+        } else {
+          user.role = 'User';
         }
-        res.json({ message: 'User updated!'});
-      });
+
+        user.save(function(err) {
+          if(err) {
+            res.send(err);
+          }
+          res.json({ message: 'User updated!'});
+        });
+      }
+
     });
   },
 
@@ -88,8 +113,8 @@ const userCntrl = {
         throw err;
       }
       if (user.validPassword(req.body.password)) {
-        console.log(req.body.userName);
-        var token = generateToken(req.body.userName);
+        console.log(user.userName);
+        var token = generateToken(user.userName, user.role);
         res.send(token);
       } else {
         res.json({ message: 'Error logging in!'});
@@ -110,11 +135,11 @@ const userCntrl = {
 
   }
 }
-function generateToken(userName){
+function generateToken(userName, role){
   var claims = {
     sub: userName,
     iss: 'docman',
-    permissions: 'create'
+    permissions: role
   }
   var jwt = nJwt.create(claims, process.env.SECRET);
   var token = jwt.compact();

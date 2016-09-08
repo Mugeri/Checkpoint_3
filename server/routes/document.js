@@ -1,6 +1,7 @@
 
 const router = require('express').Router();
 const documentCntrl = require('../controllers/document.js');
+const userCntrl = require('../controllers/user.js')
 
 
 {
@@ -11,6 +12,7 @@ const documentCntrl = require('../controllers/document.js');
   router.use(function(req, res, next) {
     //do logging
     console.log('Something is happening. ')
+    userCntrl.authenticate(req, res);
     next();
   });
 
@@ -18,7 +20,7 @@ const documentCntrl = require('../controllers/document.js');
 
     //create a document
     .post(documentCntrl.createDoc)
-    .get(documentCntrl.getAllDocs);
+    .get(documentCntrl.all);
 
   router.route('/:document_id')
 

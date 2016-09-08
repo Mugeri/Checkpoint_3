@@ -1,34 +1,55 @@
 const Document = require('./../models/document.js');
 const bodyParser = require('body-parser');
+const userCntrl = require('./user.js');
 
 const documentCntrl = {
   createDoc: function(req, res) {
+    var token = userCntrl.authenticate(req, res);
+    var permissions = token.body.permissions;
+    var owner = token.body.sub;
     var document = new Document(); //create a new instance of the Document
     document.Title= req.body.title;
     document.Content = req.body.content;
-    document.Owner = req.body.owner;
+    document.Owner = owner;
+
+    if( permissions == 'Admin' ) {
+      document.Permissions = req.body.permissions;
+    } else {
+      document.Permissions = 'Public'
+    }
 
     //save the document and check for errors
     document.save(function(err) {
       if(err) {
-        res.send(err);
+        return res.send(err);
       }
-      res.json({ message: 'Document created!' });
+      return res.json({ message: 'Document created!' });
     });
   },
-  getAllDocs: function(req, res) {
+  all: function(req, res) {
+    var token = userCntrl.authenticate(req, res);
+    var permissions = token.body.permissions;
+    var owner = token.body.sub;
+    var limit = req.body.limit || req.query.limit || req.headers['limit'];
+    var page = req.body.page || req.query.page || req.headers['page'];
+    var role = req.body.role || req.query.role || req.headers['role'];
+    if(permissions == 'Admin'){
+      Document.paginate(Document.find().sort('CreatedAt'),
+      { page: parseInt(page), limit: parseInt(limit)})
+        .then(function(err, documents) {
+        if(err) {
+          res.send(err);
+        }
+      });
+    }
     Document.paginate(
-      Document.find(function(err, documents) {
+      Document.find({$or: [{ Owner: owner}, {Permissions: 'Public' }]}),
+      { page: parseInt(page), limit: parseInt(limit) })
+      .then(function(err, documents) {
         if(err) {
           res.send(err);
         }
-        res.json(documents);
-      }),{ offset: 10, limit: 10 },(function(err, documents) {
-        if(err) {
-          res.send(err);
-        }
-        // res.json(documents);
-      }));
+    });
   },
   getSpecificDoc: function(req, res) {
     Document.findById(req.params.document_id, function(err, document) {
@@ -39,16 +60,27 @@ const documentCntrl = {
     });
   },
   updateDoc: function(req, res) {
+    var token = userCntrl.authenticate(req, res);
+    var permissions = token.body.permissions;
+    var owner = token.body.sub;
 
     Document.findById(req.params.document_id, function(err, document) {
       if(err) {
         res.send(err);
       }
+      if(owner !== document.Owner){
+        res.json({ message: 'Cannot edit this document!'});
+      } else {
       //update the document info
       document.Title= req.body.title;
       document.Content = req.body.content;
-      document.Owner = req.body.owner
+      document.Owner = owner;
       document.ModifiedAt = Date.now();
+      if( permissions == 'Admin' ) {
+        document.Permissions = req.body.permissions;
+      } else {
+        document.Permissions = 'Public'
+      }
 
       document.save(function(err) {
         if(err) {
@@ -56,6 +88,7 @@ const documentCntrl = {
         }
         res.json({ message: 'Document updated!'});
       });
+    }
     });
   },
   deleteDoc: function(req, res) {

@@ -1,9 +1,11 @@
 var userRoutes = require('./user.js');
-var documentRoutes = require('./document.js')
+var documentRoutes = require('./document.js');
+var rolesRoutes = require('./roles.js');
 
 const router = (app, passport) => {
   app.use('/api/users', userRoutes);
   app.use('/api/documents', documentRoutes);
+  app.use('/api/roles', rolesRoutes);
 };
 
 // route middleware to make sure a user is logged in
