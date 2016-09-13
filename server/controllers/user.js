@@ -19,8 +19,9 @@ const userCntrl = {
   createUser: function(req, res) {
     var token = userCntrl.authenticate(req, res);
     var permissions = token.body.permissions;
+
     User.find({email: req.body.email }, function(err, users) {
-      if(!users) {
+      if(users.length == 0) {
         var user = new User(); //create a new instance of the User models
         user.userName = req.body.userName;
         user.name.first = req.body.firstName;
@@ -37,11 +38,15 @@ const userCntrl = {
         user.save(function(err) {
           if(err) {
             res.send(err);
+          } else{
+            res.json({ message: 'User created!',
+                      userRole: user.role});
           }
-          res.json({ message: 'User created!' });
         });
       } else {
-        res.json({ message: 'User already exists'});
+        console.log(user);
+        res.json({ message: 'User already exists',
+                  status: 400});
       }
     });
 
@@ -113,9 +118,11 @@ const userCntrl = {
         throw err;
       }
       if (user.validPassword(req.body.password)) {
-        console.log(user.userName);
         var token = generateToken(user.userName, user.role);
-        res.send(token);
+        // res.send(token);
+        res.json({ message: 'Error logging in!',
+                  status: 200,
+                  token: token})
       } else {
         res.json({ message: 'Error logging in!'});
       }
@@ -128,7 +135,7 @@ const userCntrl = {
     if(token) {
       console.log('now we are here!');
       token = '';
-      res.send(token);
+      res.send({'token': token});
     } else {
       res.json({ message: 'no token found'})
     }
