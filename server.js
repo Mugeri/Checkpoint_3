@@ -13,6 +13,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session =require('express-session');
 
+mongoose.Promise = global.Promise;//the mpromise is deprecated so had to plugin anothere library
 mongoose.connect('mongodb://localhost/docman');
 
 // configure app to use bodyParser()
@@ -21,7 +22,11 @@ app.use(morgan('dev')); //log every request to the console
 app.use(cookieParser(process.env.SECRET)); //read cookieParser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(session());
+app.use(session({
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(passport.initialize());
 app.use(passport.session()); //persistent login sessions
 app.use(flash()); //use connect-flash for flash messages stored in session
@@ -37,3 +42,5 @@ router(app, passport);
 //START THE server
 app.listen(port);
 console.log('Magic happens on port ' + port);
+
+module.exports = app;

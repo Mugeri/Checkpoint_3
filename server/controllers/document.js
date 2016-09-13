@@ -10,46 +10,69 @@ const documentCntrl = {
     var document = new Document(); //create a new instance of the Document
     document.Title= req.body.title;
     document.Content = req.body.content;
-    document.Owner = owner;
 
     if( permissions == 'Admin' ) {
-      document.Permissions = req.body.permissions;
+      document.Permissions = req.body.permissions || 'Public';
+      document.Owner = req.body.owner;
     } else {
-      document.Permissions = 'Public'
+      document.Permissions = 'Public';
+      document.Owner = owner;
     }
 
     //save the document and check for errors
     document.save(function(err) {
       if(err) {
-        return res.send(err);
+        return res.status(400).json({ message: err });
       }
-      return res.json({ message: 'Document created!' });
+      return res.status(200).json({
+        message: 'Document created!',
+        document: document
+        });
     });
   },
   all: function(req, res) {
     var token = userCntrl.authenticate(req, res);
-    var permissions = token.body.permissions;
+    var permissions = token.body.permissions || req.body.role || req.query.role || req.headers['role'];
     var owner = token.body.sub;
     var limit = req.body.limit || req.query.limit || req.headers['limit'];
     var page = req.body.page || req.query.page || req.headers['page'];
-    var role = req.body.role || req.query.role || req.headers['role'];
+    var published = req.body.published || req.query.published || req.headers['published'];
+
     if(permissions == 'Admin'){
-      Document.paginate(Document.find().sort('CreatedAt'),
-      { page: parseInt(page), limit: parseInt(limit)})
-        .then(function(err, documents) {
-        if(err) {
-          res.send(err);
-        }
-      });
+      if(published) {
+        var start = new Date(published);
+        var end = new Date(start.getTime() + 86400000);
+
+        var query = Document.find({CreatedAt: {"$gte": start, "$lt": end}});
+      }
+      query = Document.find();
+    } else {
+      if(published){
+        var start = new Date(published);
+        var end = new Date(start.getTime() + 86400000);
+
+        console.log('TUNATAFUTA KUTOKA: ', start);
+        console.log('MPAKA: ', end);
+
+        var query = Document.find(
+          { $and: [{ CreatedAt: {"$gte": start, "$lt": end}},
+            {$or:[{ Owner: owner}, {Permissions: 'Public' }]}
+          ]
+          });
+      } else {
+        var query = Document.find(
+          { $or: [{Owner: owner}, {Permissions: 'Public'}]
+        });
+      }
     }
-    Document.paginate(
-      Document.find({$or: [{ Owner: owner}, {Permissions: 'Public' }]}),
-      { page: parseInt(page), limit: parseInt(limit) })
+    Document.paginate(query.sort('-CreatedAt'),
+    { page: parseInt(page), limit: parseInt(limit)})
       .then(function(err, documents) {
-        if(err) {
-          res.send(err);
-        }
+      if(err) {
+        return res.status(400).json({ message: err });
+      }
     });
+
   },
   getSpecificDoc: function(req, res) {
     Document.findById(req.params.document_id, function(err, document) {
@@ -102,4 +125,5 @@ const documentCntrl = {
     });
   }
 }
+
 module.exports = documentCntrl;

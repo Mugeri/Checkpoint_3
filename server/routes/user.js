@@ -30,7 +30,7 @@ const passport = require('passport')
   router.route('/')
     //create a user
     .post(userCntrl.createUser)
-    .get(userCntrl.getAllUsers);
+    .get(userCntrl.all);
 
   router.route('/:user_id')
     .get(userCntrl.getSpecificUser)

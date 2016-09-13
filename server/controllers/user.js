@@ -12,15 +12,16 @@ const userCntrl = {
       var verified = nJwt.verify(token, secret);
       return verified;
     } else {
-      return res.json({ message: 'Unauthorized User!'});
+      res.status(400).json({ message: 'Unauthorized User!'});
 
     }
   },
   createUser: function(req, res) {
     var token = userCntrl.authenticate(req, res);
     var permissions = token.body.permissions;
+
     User.find({email: req.body.email }, function(err, users) {
-      if(!users) {
+      if(!users.length) {
         var user = new User(); //create a new instance of the User models
         user.userName = req.body.userName;
         user.name.first = req.body.firstName;
@@ -28,7 +29,7 @@ const userCntrl = {
         user.email = req.body.email;
         user.password = user.generateHash(req.body.password);
         if(permissions == 'Admin'){
-          user.role = req.body.role;
+          user.role = req.body.role || 'User';
         } else {
           user.role = 'User';
         }
@@ -36,22 +37,30 @@ const userCntrl = {
         //save the user and check for errors
         user.save(function(err) {
           if(err) {
-            res.send(err);
+            res.status(400).json({
+              message: 'Something went wrong',
+              err: err
+            });
+          } else{
+            res.status(200).json({ message: 'User Created', user: user});
           }
-          res.json({ message: 'User created!' });
         });
       } else {
-        res.json({ message: 'User already exists'});
+        res.status(400).json({ message: 'User already exists'});
       }
     });
 
   },
-  getAllUsers: function(req, res) {
+  all: function(req, res) {
     User.find(function(err, users) {
       if(err) {
         return res.send(err);
       }
-      return res.json(users);
+      return res.json({
+        message: 'all users',
+        status: 200,
+        users: users
+      });
     });
   },
 
@@ -113,9 +122,11 @@ const userCntrl = {
         throw err;
       }
       if (user.validPassword(req.body.password)) {
-        console.log(user.userName);
         var token = generateToken(user.userName, user.role);
-        res.send(token);
+        // res.send(token);
+        res.json({ message: 'Error logging in!',
+                  status: 200,
+                  token: token})
       } else {
         res.json({ message: 'Error logging in!'});
       }
@@ -128,7 +139,7 @@ const userCntrl = {
     if(token) {
       console.log('now we are here!');
       token = '';
-      res.send(token);
+      res.send({'token': token});
     } else {
       res.json({ message: 'no token found'})
     }

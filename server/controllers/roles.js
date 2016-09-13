@@ -5,15 +5,12 @@ const userCntrl = require('./user.js');
 
 const roleCntrl = {
   createRole: function(req, res) {
-    console.log('i\'m here');
     var token = userCntrl.authenticate(req, res);
     var permissions = token.body.permissions;
-    console.log('ndio hizi permissions ', permissions);
 
     if(permissions == 'Admin') {
-      console.log('niko hapa');
       Roles.find({ title: req.body.title}, function(err, roles) {
-        if(!roles) {
+        if(!roles.length) {
           var role = new Roles();
           role.title = req.body.title;
 
@@ -24,7 +21,7 @@ const roleCntrl = {
             return res.json({ message: 'Role created!'});
           });
         } else {
-          res.json({ message: 'Role already exists!'});
+          res.status(400).json({ message: 'Role already exists!'});
         }
       });
     } else {
@@ -34,7 +31,7 @@ const roleCntrl = {
   all: function(req, res) {
     Roles.find(function(err, roles) {
         if(err) {
-          res.send(err);
+          res.status(400).json({message: err});
         }
         return res.json(roles);
       });
