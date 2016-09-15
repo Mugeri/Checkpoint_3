@@ -1,35 +1,40 @@
-var app = require('../../server.js');
-var request = require('supertest')(app);
-var expect = require('chai').expect;
+const app = require('../../server');
+const request = require('supertest')(app);
+const expect = require('chai').expect;
 
-describe('Documents', function(){
-  var token;
-  var limit = 3;
-  var page = 1
-  beforeEach(function(done) {
+describe('Documents', () => {
+  let token;
+  const limit = 3;
+  const page = 1;
+  beforeEach((done) => {
     request
       .post('/api/users/login/')
       .send({
-          userName: 'riwhiz',
-          password: 'olive'
+        userName: 'riwhiz',
+        password: 'olive',
       })
-      .end(function(err, res) {
-          token = res.body.token;
-          done();
+      .end((err, res) => {
+        if (err) {
+          console.log('ERROR NI HAPA');
+          done(err);
+        }
+        console.log('TUKO HAPA');
+        token = res.body.token;
+        done();
       });
   });
 
-  describe('CRUD', function() {
-    it('validate created document has date published', function(done) {
+  describe('CRUD', () => {
+    it('validate created document has date published', (done) => {
       request
         .post('/api/documents/')
-        .set({ 'x-access-token': token})
+        .set({ 'x-access-token': token })
         .send({
           title: 'Testing',
-          content: 'I am testing that it shall store the date it is published'
+          content: 'I am testing that it shall store the date it is published',
         })
-        .end(function(err, res) {
-          if(err){
+        .end((err, res) => {
+          if (err) {
             return done(err);
           }
           expect(res.status).to.be.equal(200);
@@ -38,61 +43,58 @@ describe('Documents', function(){
           done();
         });
     });
-    it('validate documents returned when given a limit', function(done) {
+    it('validate documents returned when given a limit', (done) => {
       request
         .get('/api/documents/')
         .query({
-          'token': token,
-          'limit': limit
+          token,
+          limit,
         })
         .expect('Content-Type', /json/)
-        .end(function(err, res) {
-          if(err) {
+        .end((err, res) => {
+          if (err) {
             return done(err);
           }
           expect(res.body.message.docs.length).to.be.equal(limit);
           done();
         });
-
     });
-    it('check documents returned when given a limit and an offset', function(done) {
+    it('check documents returned when given a limit and an offset', (done) => {
       request
         .get('/api/documents/')
         .query({
-          'token': token,
-          'limit': limit,
-          'page': page
+          token,
+          limit,
+          page,
         })
         .expect('Content-Type', /json/)
-        .end(function(err, res) {
-          if(err) {
+        .end((err, res) => {
+          if (err) {
             return done(err);
           }
           expect(res.body.message.docs.length).to.be.equal(limit);
           expect(res.body.message.page).to.be.equal(page);
           done();
         });
-
     });
-    it('checks documents are in order from most recent', function(done) {
+    it('checks documents are in order from most recent', (done) => {
       request
         .get('/api/documents/')
         .query({
-          'token': token,
-          'limit': limit,
+          token,
+          limit,
         })
-        .end(function(err, res) {
-          if(err) {
+        .end((err, res) => {
+          if (err) {
             return done(err);
           }
-          var first = res.body.message.docs[0].CreatedAt;
-          var second = res.body.message.docs[1].CreatedAt;
-          var third = res.body.message.docs[2].CreatedAt;
-          console.log(first, second, third);
+          const first = res.body.message.docs[0].CreatedAt;
+          const second = res.body.message.docs[1].CreatedAt;
+          const third = res.body.message.docs[2].CreatedAt;
           expect(first).to.be.above(second);
           expect(second).to.be.above(third);
           done();
-        })
+        });
     });
   });
 });

@@ -1,6 +1,5 @@
 const router = require('express').Router();
-const roleCntrl = require('../controllers/roles.js');
-const userCntrl = require('../controllers/user.js');
+const roleCntrl = require('../controllers/roles');
 
 {
   // router.use(function(req, res, next) {
@@ -11,9 +10,8 @@ const userCntrl = require('../controllers/user.js');
   // });
 
   router.route('/')
-    //create a role
+    // create a role
     .post(roleCntrl.createRole)
     .get(roleCntrl.all);
-
 }
 module.exports = router;

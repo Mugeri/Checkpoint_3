@@ -1,15 +1,15 @@
-var TestRoles = [
+const TestRoles = [
   {
-    title: 'Admin'
+    title: 'Admin',
   },
   {
-    title: 'User'
+    title: 'User',
   },
   {
-    title: 'Public'
+    title: 'Public',
   },
   {
-    title: 'Private'
-  }
-]
+    title: 'Private',
+  },
+];
 module.exports = TestRoles;
