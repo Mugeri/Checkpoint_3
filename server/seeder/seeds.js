@@ -23,11 +23,12 @@ async.series([
                 users.remove();
                 roles.remove();
                 docs.remove();
-                console.log("+++++++++ADDING DATA++++++++++++++++");
+              console.log("+++++++++ADDING DATA++++++++++++++++");
                 users.insert(TestUsers, function(err, result) {
                     if (err) {
                         console.log("Couldn't insert users: ", err)
                     } else {
+
                         console.log("ADDED", result.insertedCount, "USERS");
                     }
                 });
@@ -45,7 +46,8 @@ async.series([
                   }
                   console.log("ADDED", result.insertedCount, "DOCS");
                   callback();
-                })
+                });
+
 
             }
         });

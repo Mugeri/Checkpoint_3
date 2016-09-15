@@ -40,14 +40,20 @@ const documentCntrl = {
 
     if(permissions == 'Admin'){
       if(published) {
+<<<<<<< HEAD
         var start = new Date(published);
         var end = new Date(start.getTime() + 86400000);
 
+=======
+        var start = published + 'T00:00:00Z';
+        var end = published + 'T23:59:59Z';
+>>>>>>> 60d43e6179c1eb3d88146354cbffb52e387eadad
         var query = Document.find({CreatedAt: {"$gte": start, "$lt": end}});
       }
       query = Document.find();
     } else {
       if(published){
+<<<<<<< HEAD
         var start = new Date(published);
         var end = new Date(start.getTime() + 86400000);
 
@@ -56,6 +62,12 @@ const documentCntrl = {
 
         var query = Document.find(
           { $and: [{ CreatedAt: {"$gte": start, "$lt": end}},
+=======
+        var start = published + 'T00:00:00Z';
+        var end = published + 'T23:59:59Z';
+        var query = Document.find(
+          { $and: [{ CreatedAt: {"$gte": start, "$lt": end} },
+>>>>>>> 60d43e6179c1eb3d88146354cbffb52e387eadad
             {$or:[{ Owner: owner}, {Permissions: 'Public' }]}
           ]
           });
@@ -65,11 +77,19 @@ const documentCntrl = {
         });
       }
     }
+<<<<<<< HEAD
     Document.paginate(query.sort('-CreatedAt'),
     { page: parseInt(page), limit: parseInt(limit)})
       .then(function(err, documents) {
       if(err) {
         return res.status(400).json({ message: err });
+=======
+    Document.paginate(query.sort('CreatedAt'),
+    { page: parseInt(page), limit: parseInt(limit)})
+      .then(function(err, documents) {
+      if(err) {
+        res.send(err);
+>>>>>>> 60d43e6179c1eb3d88146354cbffb52e387eadad
       }
     });
 

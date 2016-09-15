@@ -21,7 +21,11 @@ const userCntrl = {
     var permissions = token.body.permissions;
 
     User.find({email: req.body.email }, function(err, users) {
+<<<<<<< HEAD
       if(!users.length) {
+=======
+      if(users.length == 0) {
+>>>>>>> 60d43e6179c1eb3d88146354cbffb52e387eadad
         var user = new User(); //create a new instance of the User models
         user.userName = req.body.userName;
         user.name.first = req.body.firstName;
@@ -37,6 +41,7 @@ const userCntrl = {
         //save the user and check for errors
         user.save(function(err) {
           if(err) {
+<<<<<<< HEAD
             res.status(400).json({
               message: 'Something went wrong',
               err: err
@@ -47,6 +52,18 @@ const userCntrl = {
         });
       } else {
         res.status(400).json({ message: 'User already exists'});
+=======
+            res.send(err);
+          } else{
+            res.json({ message: 'User created!',
+                      userRole: user.role});
+          }
+        });
+      } else {
+        console.log(user);
+        res.json({ message: 'User already exists',
+                  status: 400});
+>>>>>>> 60d43e6179c1eb3d88146354cbffb52e387eadad
       }
     });
 

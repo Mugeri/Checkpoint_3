@@ -62,4 +62,4 @@ describe('Role', function() {
           done();
         });
     });
-})
+});
