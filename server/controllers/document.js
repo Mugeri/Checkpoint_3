@@ -40,9 +40,9 @@ const documentCntrl = {
 
     if(permissions == 'Admin'){
       if(published) {
+
         var start = new Date(published);
         var end = new Date(start.getTime() + 86400000);
-
         var query = Document.find({CreatedAt: {"$gte": start, "$lt": end}});
       }
       query = Document.find();
@@ -51,13 +51,10 @@ const documentCntrl = {
         var start = new Date(published);
         var end = new Date(start.getTime() + 86400000);
 
-        console.log('TUNATAFUTA KUTOKA: ', start);
-        console.log('MPAKA: ', end);
-
         var query = Document.find(
           { $and: [{ CreatedAt: {"$gte": start, "$lt": end}},
-            {$or:[{ Owner: owner}, {Permissions: 'Public' }]}
-          ]
+            {$or:[{ Owner: owner}, {Permissions: 'Public' }]
+          }]
           });
       } else {
         var query = Document.find(

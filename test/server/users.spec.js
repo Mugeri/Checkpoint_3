@@ -16,7 +16,6 @@ describe('User', function() {
               token = res.body.token;
               done();
           });
-
   });
     describe('Create', function() {
         it('should POST to api/users and create user', function(done) {
@@ -119,5 +118,4 @@ describe('User', function() {
         });
     });
   });
-
 });

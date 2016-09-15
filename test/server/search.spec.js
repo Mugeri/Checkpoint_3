@@ -6,7 +6,7 @@ describe('Search', function() {
   var token;
   var limit = 10;
   var page = 1;
-  var date = '2016-09-14';
+  var date = '2016-09-15';
   beforeEach(function(done) {
     request
       .post('/api/users/login/')
