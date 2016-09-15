@@ -43,11 +43,13 @@ const documentCntrl = {
 
         var start = new Date(published);
         var end = new Date(start.getTime() + 86400000);
+
         var query = Document.find({CreatedAt: {"$gte": start, "$lt": end}});
       }
       query = Document.find();
     } else {
       if(published){
+
         var start = new Date(published);
         var end = new Date(start.getTime() + 86400000);
 

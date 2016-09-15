@@ -21,6 +21,7 @@ const userCntrl = {
     var permissions = token.body.permissions;
 
     User.find({email: req.body.email }, function(err, users) {
+
       if(!users.length) {
         var user = new User(); //create a new instance of the User models
         user.userName = req.body.userName;
@@ -46,7 +47,9 @@ const userCntrl = {
           }
         });
       } else {
-        res.status(400).json({ message: 'User already exists'});
+        console.log(user);
+        res.json({ message: 'User already exists',
+                  status: 400});
       }
     });
 
