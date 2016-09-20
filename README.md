@@ -82,7 +82,7 @@ In the project root, run `npm start`.
 
   * ##### get documents by date
   `GET`
-  `http://127.0.0.1:3000/api/documents?date=2016-09-05`
+  `http://127.0.0.1:3000/api/documents?published=2016-09-05`
 
   * #### paginate documents
   `GET`
