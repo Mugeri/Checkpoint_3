@@ -4,6 +4,9 @@ const userCntrl = require('./user');
 const documentCntrl = {
   createDoc: (req, res) => {
     const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
     const permissions = token.body.permissions;
     const owner = token.body.sub;
     const document = new Document(); // create a new instance of the Document
@@ -31,6 +34,9 @@ const documentCntrl = {
   },
   all: (req, res) => {
     const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
     const permissions = token.body.permissions;
     const owner = token.body.sub;
     const limit = req.body.limit || req.query.limit || req.headers.limit;
@@ -42,6 +48,8 @@ const documentCntrl = {
       if (published) {
         const start = new Date(published);
         const end = new Date(start.getTime() + 86400000);
+        console.log('START IS: ', start);
+        console.log('PUBLISHED IS: ', published);
 
         query = Document.find({ CreatedAt: { $gte: start, $lt: end } });
       }
@@ -70,49 +78,55 @@ const documentCntrl = {
   getSpecificDoc: (req, res) => {
     Document.findById(req.params.document_id, (err, document) => {
       if (err) {
-        res.send(err);
+        return res.status(400).err;
       }
-      res.json(document);
+      return res.json(document);
     });
   },
   updateDoc: (req, res) => {
     const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
     const permissions = token.body.permissions;
     const owner = token.body.sub;
 
     Document.findById(req.params.document_id, (err, document) => {
-      if (err) {
-        res.send(err);
+      if (err || !document) {
+        return res.status(400).json({ message: 'no such document!', err });
       }
       if (owner !== document.Owner) {
-        res.json({ message: 'Cannot edit this document!' });
-      } else {
-      // update the document info
-        document.Title = req.body.title;
-        document.Content = req.body.content;
-        document.Owner = owner;
-        document.ModifiedAt = Date.now();
-        if (permissions === 'Admin') {
-          document.Permissions = req.body.permissions;
-        } else {
-          document.Permissions = 'Public';
-        }
-
-        document.save((err) => {
-          if (err) {
-            res.send(err);
-          }
-          res.json({ message: 'Document updated!' });
-        });
+        return res.json({ message: 'Cannot edit this document!' });
       }
+      // update the document info
+      document.Title = req.body.title;
+      document.Content = req.body.content;
+      document.Owner = owner;
+      document.ModifiedAt = Date.now();
+      if (permissions === 'Admin') {
+        document.Permissions = req.body.permissions;
+      } else {
+        document.Permissions = 'Public';
+      }
+
+      document.save((err) => {
+        if (err) {
+          return res.send(err);
+        }
+        return res.json({ message: 'Document updated!' });
+      });
     });
   },
   deleteDoc: (req, res) => {
+    const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
     Document.remove({
       _id: req.params.document_id
     }, (err, user) => {
       if (err) {
-        res.send(err);
+        return res.err;
       }
       res.json({ message: 'Successfully deleted' });
     });

@@ -9,13 +9,21 @@ const userCntrl = {
     // check header or url parameters or post parameters for token
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (token) {
-      const verified = nJwt.verify(token, secret);
-      return verified;
+      let verified = nJwt.verify(token, secret);
+      if (verified === { JwtParseError: 'Jwt cannot be parsed' }) {
+        verified = { message: 'Unauthorized User!' };
+        return verified;
+      }
+      return verified
     }
-    return res.status(400).json({ message: 'Unauthorized User!' });
+    const verified = { message: 'Unauthorized User!' };
+    return verified;
   },
   createUser: (req, res) => {
     const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
     const permissions = token.body.permissions;
 
     User.find({ email: req.body.email }, (err, users) => {
@@ -65,7 +73,7 @@ const userCntrl = {
   getSpecificUser: (req, res) => {
     User.findById(req.params.user_id, (err, user) => {
       if (err) {
-        res.send(err);
+        res.status(400).json({ err });
       }
       res.json(user);
     });
@@ -73,22 +81,23 @@ const userCntrl = {
   updateUser: (req, res) => {
     User.findById(req.params.user_id, (err, user) => {
       const token = userCntrl.authenticate(req, res);
-      const permissions = token.body.permissions;
-      if (err) {
-        res.send(err);
+      if (token.message === 'Unauthorized User!') {
+        return res.status(400).json({ message: 'Unauthorized User!' });
       }
-      if (!user) {
-        res.json({ message: 'no such user!' });
-      } else {
+      const permissions = token.body.permissions;
+      if (err || !user) {
+        return res.status(400).json({ message: 'no such user!', err });
+      }
+      else {
         // update the user info
-        user.userName = req.body.userName;
-        user.name.first = req.body.firstName;
-        user.name.last = req.body.lastName;
-        user.email = req.body.email;
+        user.userName = req.body.userName || user.userName;
+        user.name.first = req.body.firstName || user.name.first;
+        user.name.last = req.body.lastName || user.name.last;
+        user.email = req.body.email || user.email;
         user.password = user.generateHash(req.body.password);
 
         if (permissions === 'Admin') {
-          user.role = req.body.role;
+          user.role = req.body.role || user.role;
         } else {
           user.role = 'User';
         }
@@ -97,7 +106,7 @@ const userCntrl = {
           if (err) {
             res.send(err);
           }
-          res.json({ message: 'User updated!' });
+          res.json({ message: 'User updated!', user});
         });
       }
     });

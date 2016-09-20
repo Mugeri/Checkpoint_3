@@ -9,7 +9,7 @@ const TestDocuments = [
   {
     title: 'Numbers',
     content: '1234567890 09876543',
-    Owner: 'stranger',
+    Owner: 'riwhiz',
     CreatedAt: new Date(Date.now() + 1),
     Permissions: 'Private',
   },
@@ -32,6 +32,7 @@ const TestDocuments = [
   {
     title: 'Football Clubs',
     content: 'Chelsea, Paris Saint German, Arsenal, Manchester United.',
+    Owner: 'riwhiz',
     CreatedAt: new Date(Date.now() + 4),
     Permissions: 'Public',
 
@@ -40,6 +41,7 @@ const TestDocuments = [
     title: 'Mwanake',
     content: 'mwanake ngukwira ati wendo ni wendo, utumage mundu oye mukanda\n'
               + 'ecurie, erute mwoyo niundu wa mundu ungi.',
+    Owner: 'riwhiz',
     Permissions: 'Private',
     CreatedAt: new Date(Date.now() + 5),
   },
@@ -54,6 +56,7 @@ const TestDocuments = [
   {
     title: 'Brands',
     content: 'Louis Vuitton, Gucci',
+    Owner: 'riwhiz',
     CreatedAt: new Date(Date.now() + 7),
     Permissions: 'Private',
   },

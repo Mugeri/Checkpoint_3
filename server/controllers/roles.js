@@ -5,6 +5,9 @@ const userCntrl = require('./user');
 const roleCntrl = {
   createRole: (req, res) => {
     const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
     const permissions = token.body.permissions;
 
     if (permissions === 'Admin') {
