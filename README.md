@@ -14,7 +14,7 @@ Each User has a role while documents have owners and permissions. The Administra
 
 1. Install [**Node JS**](https://nodejs.org/en/).
 1. Install [**MongoDB**](https://www.mongodb.org/) .
-1. Clone the [**repository here**](https://github.com/andela-ekahindi/doc-api.git) 
+1. Clone the [**repository here**](https://github.com/andela-omugeri/Checkpoint_3) 
 1. [**cd**] into the root of the **Checkpoint_3 project directory**.
 1. Run `npm install` on the terminal.
 
