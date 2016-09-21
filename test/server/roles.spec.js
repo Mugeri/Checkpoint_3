@@ -34,6 +34,21 @@ describe('Role', () => {
           done();
         });
     });
+    it('validates that role is not created without token', (done) => {
+      request
+        .post('/api/roles/')
+        .send({
+          title: 'Visitor',
+        })
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(400);
+          expect(res.body.message).to.be.equal('Unauthorized User!');
+          done();
+        });
+    });
     it('validates role title is unique', (done) => {
       request
         .post('/api/roles/')
@@ -80,10 +95,82 @@ describe('Role', () => {
           if (err) {
             return done(err);
           }
-          console.log(res.body.message);
           expect(res.status).to.be.equal(200);
           done();
         });
     });
+    it('should not updates the role if no token', (done) => {
+      request
+        .put(`/api/roles/${id}`)
+        .send({
+          title: 'Temporary',
+        })
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(400);
+          expect(res.body.message).to.be.equal('Unauthorized User!');
+          done();
+        });
+    });
+  });
+  describe('DELETE', () => {
+    it('deletes the role according to the id given', (done) => {
+      request
+        .delete(`/api/roles/${id}`)
+        .query({ token })
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(200);
+          expect(res.body.message).to.be.equal('Successfully deleted');
+          done();
+        });
+    });
+    it('should not delete the role if no token', (done) => {
+      request
+        .delete(`/api/roles/${id}`)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(400);
+          expect(res.body.message).to.be.equal('Unauthorized User!');
+          done();
+        });
+    });
+  });
+});
+describe('USER CREATE', () => {
+  let token
+  beforeEach((done) => {
+    request
+        .post('/api/users/login/')
+        .send({
+          userName: 'ganjez',
+          password: 'alex',
+        })
+        .end((err, res) => {
+          token = res.body.token;
+          done();
+        });
+  });
+  it('validates that role cannot be created if not admin', (done) => {
+    request
+      .post('/api/roles/')
+      .set({ 'x-access-token': token })
+      .send({
+        title: 'Visitor',
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.status).to.be.equal(400);
+        expect(res.body.message).to.be.equal('You dont have permission to do that');
+        done();
+      });
   });
 });

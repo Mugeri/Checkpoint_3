@@ -27,6 +27,22 @@ describe('Documents', () => {
   });
 
   describe('CREATE', () => {
+    it('validates document cannot be created if not logged in', (done) => {
+      request
+        .post('/api/documents/')
+        .send({
+          title: 'Testing',
+          content: 'I am testing that it shall store the date it is published',
+        })
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(400);
+          expect(res.body.message).to.be.equal('Unauthorized User!');
+          done();
+        });
+    });
     it('validate created document has date published', (done) => {
       request
         .post('/api/documents/')
@@ -45,8 +61,22 @@ describe('Documents', () => {
           done();
         });
     });
+
   });
   describe('READ', () => {
+    it('validates that documents cannot be accessed if not logged in', (done) => {
+      request
+        .get('/api/documents/')
+        .expect('Content-Type', /json/)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(400);
+          expect(res.body.message).to.be.equal('Unauthorized User!');
+          done();
+        });
+    });
     it('validate documents returned when given a limit', (done) => {
       request
         .get('/api/documents/')
@@ -139,21 +169,6 @@ describe('Documents', () => {
           done();
         });
     });
-    // it('should return an error if id is wrong', (done) => {
-    //   request
-    //     .get(`/api/documents/${wrongId}`)
-    //     .query({ token })
-    //     .end((err, res) => {
-    //       if (err) {
-    //         return done(err);
-    //       }
-    //       console.log('RES IS: ', res.body);
-    //       expect(res.status).to.be.equal(400);
-    //       expect(res.body.err).to.exist;
-    //       expect(res.body.name).to.not.exist;
-    //       done();
-    //     });
-    // });
   });
   describe('update a document', () => {
     it('should not update if there\'s no token', (done) => {

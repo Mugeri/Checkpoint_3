@@ -14,7 +14,7 @@ Each User has a role while documents have owners and permissions. The Administra
 
 1. Install [**Node JS**](https://nodejs.org/en/).
 1. Install [**MongoDB**](https://www.mongodb.org/) .
-1. Clone the [**repository here**](https://github.com/andela-omugeri/Checkpoint_3) 
+1. Clone the [**repository here**](https://github.com/andela-omugeri/Checkpoint_3)
 1. [**cd**] into the root of the **Checkpoint_3 project directory**.
 1. Run `npm install` on the terminal.
 
@@ -28,71 +28,71 @@ In the project root, run `npm start`.
 ### Routes
 
 * #### login
-`http://127.0.0.1:3000/api/users/login`
+`http://127.0.0.1:8080/api/users/login`
 
 * #### logout
-`http://127.0.0.1:3000/api/users/logout`
+`http://127.0.0.1:8080/api/users/logout`
 * #### users
 
   * ##### create
   `POST`
-  `http://127.0.0.1:3000/api/users`
+  `http://127.0.0.1:8080/api/users`
 
   * ##### update
   `PUT`
-  `http://127.0.0.1:3000/api/users/:id`
+  `http://127.0.0.1:8080/api/users/:id`
 
   * ##### delete
   `DELETE`
-  `http://127.0.0.1:3000/api/users/:id`
+  `http://127.0.0.1:8080/api/users/:id`
 
   * ##### get one user
   `GET`
-  `http://127.0.0.1:3000/api/users/:id`
+  `http://127.0.0.1:8080/api/users/:id`
 
   * ##### get all users
   `GET`
-  `http://127.0.0.1:3000/api/users`
+  `http://127.0.0.1:8080/api/users`
 
 * #### documents
 
   * ##### create
   `POST`
-  `http://127.0.0.1:3000/api/documents`
+  `http://127.0.0.1:8080/api/documents`
 
   * ##### update
   `PUT`
-  `http://127.0.0.1:3000/api/documents/:id`
+  `http://127.0.0.1:8080/api/documents/:id`
 
   * ##### delete
   `DELETE`
-  `http://127.0.0.1:3000/api/documents/:id`
+  `http://127.0.0.1:8080/api/documents/:id`
 
   * ##### get all documents
   `GET`
-  `http://127.0.0.1:3000/api/documents`
+  `http://127.0.0.1:8080/api/documents`
 
   * ##### get a document
   `GET`
-  `http://127.0.0.1:3000/api/documents/:id`
+  `http://127.0.0.1:8080/api/documents/:id`
 
   * ##### get documents belonging to a particular user
   `GET`
-  `http://127.0.0.1:3000/api/users/:id/documents`
+  `http://127.0.0.1:8080/api/users/:id/documents`
 
   * ##### get documents by date
   `GET`
-  `http://127.0.0.1:3000/api/documents?published=2016-09-05`
+  `http://127.0.0.1:8080/api/documents?published=2016-09-05`
 
   * #### paginate documents
   `GET`
-  `http://127.0.0.1:3000/api/documents?limit=1&page=2`
+  `http://127.0.0.1:8080/api/documents?limit=1&page=2`
 
 * #### roles
 
   * ##### create
   `POST`
-  `http://127.0.0.1:3000/api/roles`
+  `http://127.0.0.1:8080/api/roles`
 
   * #####  get all roles
   `GET`
@@ -124,5 +124,3 @@ Api endpoints were created using `express` router. The routes are defined under 
 ## Mongo Database
 
 Ensure that you have installed `mongodb` locally. Before you go ahead to run the tests or work with the api, run `mongod` on a seperate tab on your terminal. Add the configuration to the db connection in your `.env` file. Each time tests are run or the app is run, the database is dropped and seeded.
-
-

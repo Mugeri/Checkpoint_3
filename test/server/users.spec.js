@@ -41,6 +41,34 @@ describe('User', () => {
         });
     });
   });
+  describe('logoutUser', () => {
+    it('should destroy the token', (done) => {
+      request
+        .post('/api/users/logout')
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(200);
+          expect(res.body.token).to.be.equal(0);
+          expect(res.body.message).to.be.equal('logout successfull');
+          done();
+        });
+    });
+    it('should not work without token', (done) => {
+      request
+        .post('/api/users/logout')
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(400);
+          expect(res.body.message).to.be.equal('Unauthorized User!');
+          done();
+        });
+    });
+  });
   describe('Create', () => {
     it('should POST to api/users and create user', (done) => {
       request
@@ -172,6 +200,19 @@ describe('User', () => {
         done();
       });
     });
+    it('check documents returned for a specific user', (done) => {
+      request
+        .get(`/api/users/${id}/documents`)
+        .query({ token })
+        .end((err, res) => {
+          if(err) {
+            return done(err);
+          }
+          expect(res.body.documents).to.exist;
+          expect(res.body.documents.length).to.be.equal(3);
+          done();
+        })
+    })
   });
   describe('updateUser', () => {
     it('should not update if token is not valid', (done) => {
@@ -232,13 +273,26 @@ describe('User', () => {
         .delete(`/api/users/${id2}`)
         .query({ 'x-access-token': token })
         .end((err, res) => {
-          if(err) {
+          if (err) {
             return done(err);
           }
           expect(res.status).to.be.equal(200);
           expect(res.body.message).to.be.equal('Successfully deleted');
           done();
-        })
-    })
-  })
+        });
+    });
+    it('should not Delete the user with wrong id', (done) => {
+      request
+        .delete(`/api/users/${wrongId}`)
+        .query({ 'x-access-token': token })
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.be.equal(400);
+          expect(res.body.message).to.be.equal('Unsuccessfull');
+          done();
+        });
+    });
+  });
 });

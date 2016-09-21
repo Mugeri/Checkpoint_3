@@ -1,6 +1,7 @@
 
 const express = require('express');
 const userCntrl = require('../controllers/user');
+const documentCntrl = require('../controllers/document');
 
 const router = express.Router();
 
@@ -40,5 +41,8 @@ const router = express.Router();
     .get(userCntrl.getSpecificUser)
     .put(userCntrl.updateUser)
     .delete(userCntrl.deleteUser);
+
+  router.route('/:user_id/documents')
+    .get(documentCntrl.getUserDoc);
 }
 module.exports = router;

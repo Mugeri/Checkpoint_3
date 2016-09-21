@@ -1,4 +1,5 @@
 const Document = require('./../models/document');
+const User = require('./../models/user')
 const userCntrl = require('./user');
 
 const documentCntrl = {
@@ -48,8 +49,6 @@ const documentCntrl = {
       if (published) {
         const start = new Date(published);
         const end = new Date(start.getTime() + 86400000);
-        console.log('START IS: ', start);
-        console.log('PUBLISHED IS: ', published);
 
         query = Document.find({ CreatedAt: { $gte: start, $lt: end } });
       }
@@ -81,6 +80,23 @@ const documentCntrl = {
         return res.status(400).err;
       }
       return res.json(document);
+    });
+  },
+  getUserDoc: (req, res) => {
+    const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
+    User.findById(req.params.user_id, (err, user) => {
+      if (err) {
+        return res.status(400).err;
+      }
+      Document.find({ Owner: user.userName }, (err, documents) => {
+        if (err) {
+          return res.status(400).err;
+        }
+        return res.status(200).json({ documents });
+      });
     });
   },
   updateDoc: (req, res) => {

@@ -27,7 +27,7 @@ const roleCntrl = {
         }
       });
     } else {
-      res.json({ message: 'You dont have permission to do that' });
+      res.status(400).json({ message: 'You dont have permission to do that' });
     }
   },
   all: (req, res) => {

@@ -117,9 +117,9 @@ const userCntrl = {
       _id: req.params.user_id,
     }, (err) => {
       if (err) {
-        res.send(err);
+        return res.status(400).json({ message: 'Unsuccessfull', err });
       }
-      res.json({ message: 'Successfully deleted' });
+      return res.json({ message: 'Successfully deleted' });
     });
   },
   login: (req, res) => {
@@ -138,15 +138,16 @@ const userCntrl = {
       }
     });
   },
-
   logout: (req, res) => {
-    let token = req.body.token || req.query.token || req.headers['x-access-token'];
-    if (token) {
-      token = '';
-      res.send({ token });
-    } else {
-      res.json({ message: 'no token found' });
+    let token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
     }
+    token = 0;
+    return res.status(200).json({
+      message: 'logout successfull',
+      token,
+    });
   },
 };
 

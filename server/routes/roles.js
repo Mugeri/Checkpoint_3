@@ -7,7 +7,7 @@ const roleCntrl = require('../controllers/roles');
     .post(roleCntrl.createRole)
     .get(roleCntrl.all);
 
-  router.route('/:document_id')
+  router.route('/:role_id')
     .put(roleCntrl.updateRole)
     .delete(roleCntrl.deleteRole);
 }

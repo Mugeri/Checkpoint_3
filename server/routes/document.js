@@ -30,5 +30,6 @@ const userCntrl = require('../controllers/user');
     // update the document with given id
     .put(documentCntrl.updateDoc)
     .delete(documentCntrl.deleteDoc);
+
 }
 module.exports = router;
