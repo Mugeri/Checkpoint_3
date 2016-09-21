@@ -1,5 +1,5 @@
 const Document = require('./../models/document');
-const User = require('./../models/user')
+const User = require('./../models/user');
 const userCntrl = require('./user');
 
 const documentCntrl = {
@@ -139,7 +139,7 @@ const documentCntrl = {
       return res.status(400).json({ message: 'Unauthorized User!' });
     }
     Document.remove({
-      _id: req.params.document_id
+      _id: req.params.document_id,
     }, (err, user) => {
       if (err) {
         return res.err;

@@ -46,8 +46,6 @@ const roleCntrl = {
     const permissions = token.body.permissions;
 
     if (permissions === 'Admin') {
-      console.log('ID BEING SEARCHED IS: ', req.params.role_id);
-
       Roles.findById(req.params.role_id, (err, role) => {
         if (err || !role) {
           return res.status(400).json({ message: 'no such role!' });
@@ -70,7 +68,7 @@ const roleCntrl = {
       return res.status(400).json({ message: 'Unauthorized User!' });
     }
     Roles.remove({
-      _id: req.params.role_id
+      _id: req.params.role_id,
     }, (err, role) => {
       if (err) {
         return res.status(400).err;

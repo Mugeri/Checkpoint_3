@@ -117,7 +117,7 @@ describe('User', () => {
           firstName: 'Check',
           lastName: 'Role',
           email: 'roles@test.com',
-          password: 'maroles'
+          password: 'maroles',
         })
         .expect(200)
         .end((err, res) => {
@@ -166,8 +166,6 @@ describe('User', () => {
           expect(res.body.users.length).to.be.equal(12);
           id = res.body.users[0]._id;
           id2 = res.body.users[2]._id;
-
-          console.log(id);
           done();
         });
     });
@@ -205,14 +203,14 @@ describe('User', () => {
         .get(`/api/users/${id}/documents`)
         .query({ token })
         .end((err, res) => {
-          if(err) {
+          if (err) {
             return done(err);
           }
           expect(res.body.documents).to.exist;
           expect(res.body.documents.length).to.be.equal(3);
           done();
-        })
-    })
+        });
+    });
   });
   describe('updateUser', () => {
     it('should not update if token is not valid', (done) => {
@@ -227,8 +225,7 @@ describe('User', () => {
         }
         expect(res.status).to.be.equal(400);
         expect(res.body.message).to.exist;
-        expect(res.body.message).to.be.equal('Unauthorized User!')
-        // expect(res.body.name).to.not.exist;
+        expect(res.body.message).to.be.equal('Unauthorized User!');
         done();
       });
     });

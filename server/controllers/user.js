@@ -14,7 +14,7 @@ const userCntrl = {
         verified = { message: 'Unauthorized User!' };
         return verified;
       }
-      return verified
+      return verified;
     }
     const verified = { message: 'Unauthorized User!' };
     return verified;
@@ -88,27 +88,26 @@ const userCntrl = {
       if (err || !user) {
         return res.status(400).json({ message: 'no such user!', err });
       }
-      else {
-        // update the user info
-        user.userName = req.body.userName || user.userName;
-        user.name.first = req.body.firstName || user.name.first;
-        user.name.last = req.body.lastName || user.name.last;
-        user.email = req.body.email || user.email;
-        user.password = user.generateHash(req.body.password);
 
-        if (permissions === 'Admin') {
-          user.role = req.body.role || user.role;
-        } else {
-          user.role = 'User';
-        }
+      // update the user info
+      user.userName = req.body.userName || user.userName;
+      user.name.first = req.body.firstName || user.name.first;
+      user.name.last = req.body.lastName || user.name.last;
+      user.email = req.body.email || user.email;
+      user.password = user.generateHash(req.body.password);
 
-        user.save(() => {
-          if (err) {
-            res.send(err);
-          }
-          res.json({ message: 'User updated!', user});
-        });
+      if (permissions === 'Admin') {
+        user.role = req.body.role || user.role;
+      } else {
+        user.role = 'User';
       }
+
+      user.save(() => {
+        if (err) {
+          res.send(err);
+        }
+        res.json({ message: 'User updated!', user });
+      });
     });
   },
 
