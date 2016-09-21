@@ -38,5 +38,45 @@ const roleCntrl = {
       return res.json(roles);
     });
   },
+  updateRole: (req, res) => {
+    const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
+    const permissions = token.body.permissions;
+
+    if (permissions === 'Admin') {
+      console.log('ID BEING SEARCHED IS: ', req.params.role_id);
+
+      Roles.findById(req.params.role_id, (err, role) => {
+        if (err || !role) {
+          return res.status(400).json({ message: 'no such role!' });
+        }
+        // modify the role
+        role.title = req.body.title;
+
+        role.save((err) => {
+          if (err) {
+            return res.status(400).err;
+          }
+          return res.status(200).json({ message: 'Role documented' });
+        });
+      });
+    }
+  },
+  deleteRole: (req, res) => {
+    const token = userCntrl.authenticate(req, res);
+    if (token.message === 'Unauthorized User!') {
+      return res.status(400).json({ message: 'Unauthorized User!' });
+    }
+    Roles.remove({
+      _id: req.params.role_id
+    }, (err, role) => {
+      if (err) {
+        return res.status(400).err;
+      }
+      return res.json({ message: 'Successfully deleted' });
+    });
+  },
 };
 module.exports = roleCntrl;

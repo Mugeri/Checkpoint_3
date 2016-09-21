@@ -8,7 +8,7 @@
   },
   "scripts": {
     "pretest": "node server/seeder/seeds.js",
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha test/server/*.spec.js && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "test": "istanbul cover ./node_modules/mocha/bin/_mocha test/server/roles.spec.js && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node server.js"
   },
   "repository": {
