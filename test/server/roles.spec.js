@@ -75,7 +75,6 @@ describe('Role', () => {
           if (err) {
             return done(err);
           }
-          console.log('RES IS: ', res.body[4]);
           expect(res.status).to.be.equal(200);
           expect(res.body.length).to.be.equal(5);
           id = res.body[4]._id;

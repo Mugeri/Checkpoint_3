@@ -11,7 +11,6 @@ const userCntrl = require('../controllers/user');
   // here.
   router.use((req, res, next) => {
     // do logging
-    console.log('Something is happening. ');
     userCntrl.authenticate(req, res);
     next();
   });

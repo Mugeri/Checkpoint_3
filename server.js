@@ -10,7 +10,6 @@ const app = express();
 
 const port = process.env.PORT || 8080;
 
-const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -19,9 +18,7 @@ const session = require('express-session');
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/docman');
 
-// configure app to use bodyParser()
-// this will let us get data from a POST
-app.use(morgan('dev')); // log every request to the console
+
 app.use(cookieParser(process.env.SECRET)); // read cookieParser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

@@ -6,7 +6,6 @@ describe('Documents', () => {
   let token;
   let id;
   let id2;
-  const wrongId = '57dfb733f0e3e70fd416cb2';
   const limit = 4;
   const page = 1;
   const published = '2016-09-20';
@@ -27,7 +26,7 @@ describe('Documents', () => {
   });
 
   describe('CREATE', () => {
-    it('validates document cannot be created if not logged in', (done) => {
+    it('should not work if not logged in', (done) => {
       request
         .post('/api/documents/')
         .send({
@@ -43,7 +42,7 @@ describe('Documents', () => {
           done();
         });
     });
-    it('validate created document has date published', (done) => {
+    it('should create a document and store the publishing date', (done) => {
       request
         .post('/api/documents/')
         .set({ 'x-access-token': token })
@@ -64,7 +63,7 @@ describe('Documents', () => {
 
   });
   describe('READ', () => {
-    it('validates that documents cannot be accessed if not logged in', (done) => {
+    it('should not access documents if not logged in', (done) => {
       request
         .get('/api/documents/')
         .expect('Content-Type', /json/)
@@ -77,7 +76,7 @@ describe('Documents', () => {
           done();
         });
     });
-    it('validate documents returned when given a limit', (done) => {
+    it('should give documents equal to the limit', (done) => {
       request
         .get('/api/documents/')
         .query({
@@ -93,7 +92,7 @@ describe('Documents', () => {
           done();
         });
     });
-    it('check documents returned when given a limit and an offset', (done) => {
+    it('should return documents when given a limit and an offset', (done) => {
       request
         .get('/api/documents/')
         .query({
@@ -111,7 +110,7 @@ describe('Documents', () => {
           done();
         });
     });
-    it('checks documents are in order from most recent', (done) => {
+    it('should return documents in order from the most recent', (done) => {
       request
         .get('/api/documents/')
         .query({
@@ -132,7 +131,7 @@ describe('Documents', () => {
           done();
         });
     });
-    it('check documents returned when given a limit, an offset and a date', (done) => {
+    it('should return documents when given a limit, an offset and a date', (done) => {
       request
         .get('/api/documents/')
         .query({
@@ -153,7 +152,7 @@ describe('Documents', () => {
         });
     });
   });
-  describe('get specific document', () => {
+  describe('should get specific document', () => {
     it('should return document with given id', (done) => {
       request
         .get(`/api/documents/${id}`)
@@ -181,7 +180,6 @@ describe('Documents', () => {
           if (err) {
             return done(err);
           }
-          console.log(res.body);
           expect(res.status).to.be.equal(400);
           expect(res.body.message).to.exist;
           expect(res.body.message).to.be.equal('Unauthorized User!');
@@ -240,8 +238,16 @@ describe('Documents', () => {
         .end((err, res) => {
           expect(res.status).to.be.equal(200);
           expect(res.body.message).to.be.equal('Successfully deleted');
+          request
+            .get(`/api/documents/${id2}`)
+            .query({ token })
+            .end((err, response) => {
+              expect(response.status).to.be.equal(400);
+              expect(response.err).to.exist;
+              done();
+            });
           done();
         });
-    })
+    });
   });
 });

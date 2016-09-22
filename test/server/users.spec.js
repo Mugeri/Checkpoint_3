@@ -8,7 +8,7 @@ describe('User', () => {
   let id;
   let id2;
   const wrongId = '57df94dfe74e460dead6792';
-  beforeEach((done) => {
+  before((done) => {
     request
       .post('/api/users/login/')
       .send({
@@ -20,8 +20,8 @@ describe('User', () => {
         done();
       });
   });
-  describe('Authenticate', () => {
-    it('the user is not valid', (done) => {
+  describe('Authentication', () => {
+    it('rejects invalid user', (done) => {
       request
         .post('/api/users/')
         .set({ token: 12345 })
