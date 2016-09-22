@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 describe('Role', () => {
   let token;
   let id;
-  beforeEach((done) => {
+  before((done) => {
     request
         .post('/api/users/login/')
         .send({
@@ -144,7 +144,7 @@ describe('Role', () => {
 });
 describe('USER CREATE', () => {
   let token
-  beforeEach((done) => {
+  before((done) => {
     request
         .post('/api/users/login/')
         .send({

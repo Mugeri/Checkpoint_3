@@ -124,7 +124,7 @@ describe('User', () => {
           if (err) {
             return done(err);
           }
-          expect(res.body.user.role).to.exist;
+          expect(res.body.role).to.exist;
           expect(res.body).to.be.a('object');
           done();
         });
@@ -145,8 +145,8 @@ describe('User', () => {
             return done(err);
           }
           expect(res.status).to.be.equal(200);
-          expect(res.body.user.name.first).to.exist;
-          expect(res.body.user.name.last).to.exist;
+          expect(res.body.name.first).to.exist;
+          expect(res.body.name.last).to.exist;
           done();
         });
     });

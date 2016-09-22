@@ -16,8 +16,7 @@ const userCntrl = {
       }
       return verified;
     }
-    const verified = { message: 'Unauthorized User!' };
-    return verified;
+    return { message: 'Unauthorized User!' };
   },
   createUser: (req, res) => {
     const token = userCntrl.authenticate(req, res);
@@ -49,7 +48,7 @@ const userCntrl = {
               err,
             });
           } else {
-            res.status(200).json({ message: 'User Created', user });
+            res.status(200).json(user);
           }
         });
       } else {

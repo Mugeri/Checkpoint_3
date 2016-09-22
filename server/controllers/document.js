@@ -25,12 +25,9 @@ const documentCntrl = {
     // save the document and check for errors
     document.save((err) => {
       if (err) {
-        return res.status(400).json({ message: err });
+        return res.status(400).json(err);
       }
-      return res.status(200).json({
-        message: 'Document created!',
-        document,
-      });
+      return res.status(200).json(document);
     });
   },
   all: (req, res) => {
@@ -70,7 +67,7 @@ const documentCntrl = {
     { page: parseInt(page, 10), limit: parseInt(limit, 10) })
       .then((err, documents) => {
         if (err) {
-          return res.status(400).json({ message: err });
+          return res.status(400).json(err);
         }
       });
   },
@@ -127,7 +124,7 @@ const documentCntrl = {
 
       document.save((err) => {
         if (err) {
-          return res.send(err);
+          return res.status(400).json(err);
         }
         return res.json({ message: 'Document updated!' });
       });

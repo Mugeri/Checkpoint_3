@@ -9,7 +9,7 @@ describe('Documents', () => {
   const limit = 4;
   const page = 1;
   const published = '2016-09-20';
-  beforeEach((done) => {
+  before((done) => {
     request
       .post('/api/users/login/')
       .send({
@@ -55,8 +55,8 @@ describe('Documents', () => {
             return done(err);
           }
           expect(res.status).to.be.equal(200);
-          expect(res.body.document).to.exist;
-          expect(res.body.document.CreatedAt).to.exist;
+          expect(res.body).to.exist;
+          expect(res.body.CreatedAt).to.exist;
           done();
         });
     });
@@ -88,7 +88,7 @@ describe('Documents', () => {
           if (err) {
             return done(err);
           }
-          expect(res.body.message.docs.length).to.be.equal(limit);
+          expect(res.body.docs.length).to.be.equal(limit);
           done();
         });
     });
@@ -105,8 +105,8 @@ describe('Documents', () => {
           if (err) {
             return done(err);
           }
-          expect(res.body.message.docs.length).to.be.equal(limit);
-          expect(res.body.message.page).to.be.equal(page);
+          expect(res.body.docs.length).to.be.equal(limit);
+          expect(res.body.page).to.be.equal(page);
           done();
         });
     });
@@ -121,11 +121,11 @@ describe('Documents', () => {
           if (err) {
             return done(err);
           }
-          const first = res.body.message.docs[0].CreatedAt;
-          const second = res.body.message.docs[1].CreatedAt;
-          const third = res.body.message.docs[2].CreatedAt;
-          id = res.body.message.docs[3]._id;
-          id2 = res.body.message.docs[2]._id
+          const first = res.body.docs[0].CreatedAt;
+          const second = res.body.docs[1].CreatedAt;
+          const third = res.body.docs[2].CreatedAt;
+          id = res.body.docs[3]._id;
+          id2 = res.body.docs[2]._id
           expect(first).to.be.above(second);
           expect(second).to.be.above(third);
           done();
@@ -145,9 +145,9 @@ describe('Documents', () => {
           if (err) {
             return done(err);
           }
-          expect(res.body.message.docs[0].CreatedAt).to.be.at.least(published);
-          expect(res.body.message.docs.length).to.be.equal(limit);
-          expect(res.body.message.page).to.be.equal(page);
+          expect(res.body.docs[0].CreatedAt).to.be.at.least(published);
+          expect(res.body.docs.length).to.be.equal(limit);
+          expect(res.body.page).to.be.equal(page);
           done();
         });
     });

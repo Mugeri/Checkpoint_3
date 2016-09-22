@@ -7,7 +7,7 @@ describe('Search', () => {
   const limit = 10;
   const page = 1;
   const date = '2016-09-15';
-  beforeEach((done) => {
+  before((done) => {
     request
       .post('/api/users/login/')
       .send({
@@ -31,7 +31,7 @@ describe('Search', () => {
         if (err) {
           return done(err);
         }
-        expect(res.body.message.docs.length).to.be.equal(7);
+        expect(res.body.docs.length).to.be.equal(7);
         done();
       });
   });
@@ -48,7 +48,7 @@ describe('Search', () => {
         if (err) {
           return done(err);
         }
-        expect(res.body.message.docs.length).to.be.equal(7);
+        expect(res.body.docs.length).to.be.equal(7);
         done();
       });
   });
