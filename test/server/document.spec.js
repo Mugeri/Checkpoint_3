@@ -88,6 +88,7 @@ describe('Documents', () => {
         })
         .expect('content-Type', /json/)
         .end((err, res) => {
+          expect(res.status).to.be.equal(200);
           expect(res.body.docs.length).to.be.equal(limit);
           expect(res.body.page).to.be.equal(page);
           done();
@@ -101,6 +102,7 @@ describe('Documents', () => {
           limit,
         })
         .end((err, res) => {
+          expect(res.status).to.be.equal(200);
           const first = res.body.docs[0].createdAt;
           const second = res.body.docs[1].createdAt;
           const third = res.body.docs[2].createdAt;
@@ -122,6 +124,7 @@ describe('Documents', () => {
         })
         .expect('content-Type', /json/)
         .end((err, res) => {
+          expect(res.status).to.be.equal(200);
           expect(res.body.docs[0].createdAt).to.be.at.least(published);
           expect(res.body.docs.length).to.be.equal(limit);
           expect(res.body.page).to.be.equal(page);

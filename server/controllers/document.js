@@ -57,10 +57,11 @@ const documentCntrl = {
     }
     Document.paginate(query.sort('-createdAt'),
     { page: parseInt(page, 10), limit: parseInt(limit, 10) })
-      .then((err, documents) => {
-        if (err) {
-          return res.status(404).json(err);
+      .then((documents) => {
+        if (documents) {
+          return res.status(200).json(documents);
         }
+        return res.status(500);
       });
   },
   getSpecificDoc: (req, res) => {
