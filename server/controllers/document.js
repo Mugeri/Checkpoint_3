@@ -29,7 +29,7 @@ const documentCntrl = {
   all: (req, res) => {
     const permissions = req.token.body.permissions;
     const owner = req.token.body.sub;
-    const limit = req.body.limit || req.query.limit || req.headers.limit;
+    const limit = req.body.limit || req.query.limit;
     const page = req.body.page || req.query.page || req.headers.page;
     const published = req.body.published || req.query.published || req.headers.published;
     let query;
