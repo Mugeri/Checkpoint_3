@@ -13,7 +13,7 @@ describe('Role', () => {
           password: 'olive',
         })
         .end((err, res) => {
-          token = res.body.token;
+          token = res.body;
           done();
         });
   });
@@ -26,9 +26,6 @@ describe('Role', () => {
           title: 'Visitor',
         })
         .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
           expect(res.status).to.be.equal(200);
           expect(res.body).to.be.a('object');
           done();
@@ -41,11 +38,8 @@ describe('Role', () => {
           title: 'Visitor',
         })
         .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.status).to.be.equal(400);
-          expect(res.body.message).to.be.equal('Unauthorized User!');
+          expect(res.status).to.be.equal(401);
+          expect(res.body.message).to.be.equal('Invalid user');
           done();
         });
     });
@@ -60,7 +54,7 @@ describe('Role', () => {
           if (err) {
             done(err);
           }
-          expect(res.status).to.be.equal(400);
+          expect(res.status).to.be.equal(409);
           expect(res.body.message).to.be.equal('Role already exists!');
           done();
         });
@@ -108,8 +102,8 @@ describe('Role', () => {
           if (err) {
             return done(err);
           }
-          expect(res.status).to.be.equal(400);
-          expect(res.body.message).to.be.equal('Unauthorized User!');
+          expect(res.status).to.be.equal(401);
+          expect(res.body.message).to.be.equal('Invalid user');
           done();
         });
     });
@@ -135,8 +129,8 @@ describe('Role', () => {
           if (err) {
             return done(err);
           }
-          expect(res.status).to.be.equal(400);
-          expect(res.body.message).to.be.equal('Unauthorized User!');
+          expect(res.status).to.be.equal(401);
+          expect(res.body.message).to.be.equal('Invalid user');
           done();
         });
     });
@@ -152,10 +146,11 @@ describe('USER CREATE', () => {
           password: 'alex',
         })
         .end((err, res) => {
-          token = res.body.token;
+          token = res.body;
           done();
         });
   });
+
   it('validates that role cannot be created if not admin', (done) => {
     request
       .post('/api/roles/')
@@ -167,7 +162,7 @@ describe('USER CREATE', () => {
         if (err) {
           return done(err);
         }
-        expect(res.status).to.be.equal(400);
+        expect(res.status).to.be.equal(403);
         expect(res.body.message).to.be.equal('You dont have permission to do that');
         done();
       });

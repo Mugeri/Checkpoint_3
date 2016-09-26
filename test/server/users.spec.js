@@ -16,7 +16,8 @@ describe('User', () => {
         password: 'olive',
       })
       .end((err, res) => {
-        token = res.body.token;
+        // console.log('THE RESPONSE IS: ', res);
+        token = res.body;
         done();
       });
   });
@@ -24,10 +25,9 @@ describe('User', () => {
     it('rejects invalid user', (done) => {
       request
         .post('/api/users/')
-        .set({ token: 12345 })
+        .set({ 'x-access-token': '12345' })
         .end((err, res) => {
-          expect(res.status).to.be.equal(400);
-          expect(res.body.message).to.be.equal('Unauthorized User!');
+          expect(res.status).to.be.equal(401);
           done();
         });
     });
@@ -35,40 +35,12 @@ describe('User', () => {
       request
         .post('/api/users/')
         .end((err, res) => {
-          expect(res.status).to.be.equal(400);
-          expect(res.body.message).to.be.equal('Unauthorized User!');
+          expect(res.status).to.be.equal(401);
           done();
         });
     });
   });
-  describe('logoutUser', () => {
-    it('should destroy the token', (done) => {
-      request
-        .post('/api/users/logout')
-        .set({ 'x-access-token': token })
-        .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.status).to.be.equal(200);
-          expect(res.body.token).to.be.equal(0);
-          expect(res.body.message).to.be.equal('logout successfull');
-          done();
-        });
-    });
-    it('should not work without token', (done) => {
-      request
-        .post('/api/users/logout')
-        .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.status).to.be.equal(400);
-          expect(res.body.message).to.be.equal('Unauthorized User!');
-          done();
-        });
-    });
-  });
+
   describe('Create', () => {
     it('should POST to api/users and create user', (done) => {
       request
@@ -81,8 +53,8 @@ describe('User', () => {
             email: 'Tester@example.com',
             password: 'Tester',
           })
-          .expect(200)
           .end((err, res) => {
+            expect(res.status).to.be.equal(200);
             expect(res.body).to.exist;
             expect(res.body).to.be.a('object');
             done();
@@ -100,11 +72,7 @@ describe('User', () => {
           password: 'olive',
         })
         .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.status).to.be.equal(400);
-          expect(res.body).to.exist;
+          expect(res.status).to.be.equal(409);
           done();
         });
     });
@@ -119,11 +87,8 @@ describe('User', () => {
           email: 'roles@test.com',
           password: 'maroles',
         })
-        .expect(200)
         .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
+          expect(res.status).to.be.equal(200);
           expect(res.body.role).to.exist;
           expect(res.body).to.be.a('object');
           done();
@@ -155,7 +120,7 @@ describe('User', () => {
     it('validates that all users are returned', (done) => {
       request
         .get('/api/users/')
-        .query({ token })
+        .set({ 'x-access-token': token })
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
@@ -174,12 +139,12 @@ describe('User', () => {
     it('should pick user by id', (done) => {
       request
        .get(`/api/users/${ id }`)
-       .set({ token })
+       .set({ 'x-access-token': token })
        .end((err, res) => {
          if (err) {
            return done(err);
          }
-         expect(res.status).to.be.equal(200);
+         expect(res.status).to.be.equal(201);
          expect(res.body.name.first).to.be.equal('Olive');
          done();
        });
@@ -187,12 +152,12 @@ describe('User', () => {
     it('should not pick user when id is wrong', (done) => {
       request
       .get(`/api/users/${wrongId}`)
-      .set({ token })
+      .set({ 'x-access-token': token })
       .end((err, res) => {
         if (err) {
           return done(err);
         }
-        expect(res.status).to.be.equal(400);
+        expect(res.status).to.be.equal(404);
         expect(res.body.err).to.exist;
         expect(res.body.name).to.not.exist;
         done();
@@ -201,13 +166,11 @@ describe('User', () => {
     it('check documents returned for a specific user', (done) => {
       request
         .get(`/api/users/${id}/documents`)
-        .query({ token })
+        .set({ 'x-access-token': token })
         .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.body.documents).to.exist;
-          expect(res.body.documents.length).to.be.equal(3);
+          expect(res.status).to.be.equal(200);
+          expect(res.body).to.exist;
+          expect(res.body.length).to.be.equal(3);
           done();
         });
     });
@@ -223,26 +186,22 @@ describe('User', () => {
         if (err) {
           return done(err);
         }
-        expect(res.status).to.be.equal(400);
+        expect(res.status).to.be.equal(401);
         expect(res.body.message).to.exist;
-        expect(res.body.message).to.be.equal('Unauthorized User!');
+        expect(res.body.message).to.be.equal('Invalid user');
         done();
       });
     });
     it('should not update if the id is wrong', (done) => {
       request
         .put(`/api/users/${wrongId}`)
-        .query({ token })
+        .set({ 'x-access-token': token })
         .send({
           email: 'laycee@gmail.com',
         })
         .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.status).to.be.equal(400);
-          expect(res.body.err).to.exist;
-          // expect(res.body.name).to.not.exist;
+          expect(res.status).to.be.equal(404);
+          expect(res.error).to.exist;
           done();
         });
     });
@@ -258,8 +217,7 @@ describe('User', () => {
             return done(err);
           }
           expect(res.status).to.be.equal(200);
-          expect(res.body.err).to.not.exist;
-          expect(res.body.message).to.be.equal('User updated!');
+          expect(res.err).to.not.exist;
           done();
         });
     });
@@ -268,26 +226,47 @@ describe('User', () => {
     it('should Delete the user with given id', (done) => {
       request
         .delete(`/api/users/${id2}`)
-        .query({ 'x-access-token': token })
+        .set({ 'x-access-token': token })
         .end((err, res) => {
           if (err) {
             return done(err);
           }
           expect(res.status).to.be.equal(200);
-          expect(res.body.message).to.be.equal('Successfully deleted');
           done();
         });
     });
     it('should not Delete the user with wrong id', (done) => {
       request
         .delete(`/api/users/${wrongId}`)
-        .query({ 'x-access-token': token })
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          expect(res.status).to.be.equal(500);
+          done();
+        });
+    });
+  });
+  describe('logoutUser', () => {
+    it('should destroy the token', (done) => {
+      request
+        .post('/api/users/logout')
+        .set({
+          'x-access-token': token,
+        })
+        .end((err, res) => {
+          expect(res.status).to.be.equal(200);
+          expect(res.body).to.be.equal(0);
+          done();
+        });
+    });
+    it('should not work without token', (done) => {
+      request
+        .post('/api/users/logout')
         .end((err, res) => {
           if (err) {
             return done(err);
           }
-          expect(res.status).to.be.equal(400);
-          expect(res.body.message).to.be.equal('Unsuccessfull');
+          expect(res.status).to.be.equal(401);
+          expect(res.body.message).to.be.equal('Invalid user');
           done();
         });
     });

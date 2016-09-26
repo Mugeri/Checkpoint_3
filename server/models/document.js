@@ -4,12 +4,12 @@ const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 
 const documentSchema = new Schema({
-  Title: String,
-  Content: String,
-  Owner: String,
-  Permissions: String,
-  CreatedAt: { type: Date, default: Date.now },
-  ModifiedAt: { type: Date, default: Date.now },
+  title: String,
+  content: String,
+  owner: String,
+  permissions: String,
+  createdAt: { type: Date, default: Date.now },
+  modifiedAt: { type: Date, default: Date.now },
 });
 documentSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model('Document', documentSchema);
