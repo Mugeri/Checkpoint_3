@@ -58,10 +58,7 @@ const documentCntrl = {
     Document.paginate(query.sort('-createdAt'),
     { page: parseInt(page, 10), limit: parseInt(limit, 10) })
       .then((documents) => {
-        if (documents) {
-          return res.status(200).json(documents);
-        }
-        return res.status(500);
+        return res.status(200).json(documents);
       });
   },
   getSpecificDoc: (req, res) => {
