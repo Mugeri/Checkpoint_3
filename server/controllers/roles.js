@@ -4,11 +4,7 @@ const userCntrl = require('./user');
 
 const roleCntrl = {
   createRole: (req, res) => {
-    const token = userCntrl.authenticate(req, res);
-    if (token.message === 'Unauthorized User!') {
-      return res.status(400).json({ message: 'Unauthorized User!' });
-    }
-    const permissions = token.body.permissions;
+    const permissions = req.token.body.permissions;
 
     if (permissions === 'Admin') {
       Roles.find({ title: req.body.title }, (err, roles) => {
@@ -23,27 +19,24 @@ const roleCntrl = {
             return res.json({ message: 'Role created!' });
           });
         } else {
-          res.status(400).json({ message: 'Role already exists!' });
+          res.status(409).json({ message: 'Role already exists!' });
         }
       });
     } else {
-      res.status(400).json({ message: 'You dont have permission to do that' });
+      res.status(403).json({ message: 'You dont have permission to do that' });
     }
   },
   all: (req, res) => {
     Roles.find((err, roles) => {
       if (err) {
-        res.status(400).json({ message: err });
+        res.status(400).json(err);
       }
       return res.json(roles);
     });
   },
   updateRole: (req, res) => {
-    const token = userCntrl.authenticate(req, res);
-    if (token.message === 'Unauthorized User!') {
-      return res.status(400).json({ message: 'Unauthorized User!' });
-    }
-    const permissions = token.body.permissions;
+    const permissions = req.token.body.permissions;
+
 
     if (permissions === 'Admin') {
       Roles.findById(req.params.role_id, (err, role) => {
@@ -63,10 +56,6 @@ const roleCntrl = {
     }
   },
   deleteRole: (req, res) => {
-    const token = userCntrl.authenticate(req, res);
-    if (token.message === 'Unauthorized User!') {
-      return res.status(400).json({ message: 'Unauthorized User!' });
-    }
     Roles.remove({
       _id: req.params.role_id,
     }, (err, role) => {

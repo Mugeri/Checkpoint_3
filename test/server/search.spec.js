@@ -15,7 +15,7 @@ describe('Search', () => {
         password: 'alex',
       })
       .end((err, res) => {
-        token = res.body.token;
+        token = res.body;
         done();
       });
   });
@@ -28,9 +28,6 @@ describe('Search', () => {
         page,
       })
       .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
         expect(res.body.docs.length).to.be.equal(7);
         done();
       });
@@ -45,9 +42,6 @@ describe('Search', () => {
         date,
       })
       .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
         expect(res.body.docs.length).to.be.equal(7);
         done();
       });

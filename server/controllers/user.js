@@ -5,25 +5,27 @@ const nJwt = require('njwt');
 const secret = process.env.SECRET;
 
 const userCntrl = {
-  authenticate: (req, res) => {
+  authenticate: (req, res, next) => {
     // check header or url parameters or post parameters for token
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (token) {
-      let verified = nJwt.verify(token, secret);
-      if (verified === { JwtParseError: 'Jwt cannot be parsed' }) {
-        verified = { message: 'Unauthorized User!' };
-        return verified;
+      try {
+        const verified = nJwt.verify(token, secret);
+        req.token = verified;
+        next();
+      } catch (e) {
+        return res.status(401).send({
+          message: 'Invalid user',
+        });
       }
-      return verified;
+    } else {
+      return res.status(401).send({
+        message: 'Invalid user',
+      });
     }
-    return { message: 'Unauthorized User!' };
   },
   createUser: (req, res) => {
-    const token = userCntrl.authenticate(req, res);
-    if (token.message === 'Unauthorized User!') {
-      return res.status(400).json({ message: 'Unauthorized User!' });
-    }
-    const permissions = token.body.permissions;
+    const permissions = req.token.body.permissions;
 
     User.find({ email: req.body.email }, (err, users) => {
       if (!users.length) {
@@ -43,16 +45,13 @@ const userCntrl = {
         // save the user and check for errors
         user.save(() => {
           if (err) {
-            res.status(400).json({
-              message: 'Something went wrong',
-              err,
-            });
+            return res.status(500).json(err);
           } else {
-            res.status(200).json(user);
+            return res.status(200).json(user);
           }
         });
       } else {
-        res.status(400).json({ message: 'User already exists' });
+        return res.status(409).json(err);
       }
     });
   },
@@ -62,8 +61,6 @@ const userCntrl = {
         return res.send(err);
       }
       return res.json({
-        message: 'all users',
-        status: 200,
         users,
       });
     });
@@ -72,20 +69,16 @@ const userCntrl = {
   getSpecificUser: (req, res) => {
     User.findById(req.params.user_id, (err, user) => {
       if (err) {
-        res.status(400).json({ err });
+        res.status(404).json({ err });
       }
-      res.json(user);
+      res.status(201).json(user);
     });
   },
   updateUser: (req, res) => {
     User.findById(req.params.user_id, (err, user) => {
-      const token = userCntrl.authenticate(req, res);
-      if (token.message === 'Unauthorized User!') {
-        return res.status(400).json({ message: 'Unauthorized User!' });
-      }
-      const permissions = token.body.permissions;
+      const permissions = req.token.body.permissions;
       if (err || !user) {
-        return res.status(400).json({ message: 'no such user!', err });
+        return res.status(404).json(err);
       }
 
       // update the user info
@@ -103,9 +96,9 @@ const userCntrl = {
 
       user.save(() => {
         if (err) {
-          res.send(err);
+          return res.status(500).send(err);
         }
-        res.json({ message: 'User updated!', user });
+        return res.json(user);
       });
     });
   },
@@ -113,39 +106,32 @@ const userCntrl = {
   deleteUser: (req, res) => {
     User.remove({
       _id: req.params.user_id,
-    }, (err) => {
+    }, (err, user) => {
       if (err) {
-        return res.status(400).json({ message: 'Unsuccessfull', err });
+        return res.status(500).json(err);
       }
-      return res.json({ message: 'Successfully deleted' });
+      return res.json(user);
     });
   },
   login: (req, res) => {
     User.findOne({ userName: req.body.userName }, (err, user) => {
       if (err) {
-        res.status(400).json({ err });
+        res.status(500).json({ err });
       }
       if (user.validPassword(user, req.body.password)) {
         const token = generateToken(user.userName, user.role);
-
-        res.status(200).json({ message: 'logged in!',
-                  token,
-                });
+        return res.status(202).json(token);
       } else {
         res.status(400).json({ message: 'Error logging in!' });
       }
     });
   },
   logout: (req, res) => {
-    let token = userCntrl.authenticate(req, res);
-    if (token.message === 'Unauthorized User!') {
-      return res.status(400).json({ message: 'Unauthorized User!' });
+    if (req.token) {
+      const token = 0;
+      return res.status(200).json(token);
     }
-    token = 0;
-    return res.status(200).json({
-      message: 'logout successfull',
-      token,
-    });
+    return res.status(400);
   },
 };
 
